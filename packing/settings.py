@@ -73,16 +73,30 @@ WSGI_APPLICATION = 'packing.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/4.1/ref/settings/#databases
+DATABASE_ROUTERS = ['main.router.DBRouter']
 
 DATABASES = {
     'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / "db.sqlite3",
+    },
+    'dcp': {
         'ENGINE': 'mssql',
         'NAME': 'dcp',
         'USER': 'python',
         'PASSWORD': 'Daicel@DSSE',
         'HOST': '159.228.208.8',
         'PORT': '1433',
-        'OPTIONS': {'driver': 'ODBC Driver 17 for SQL Server', 'host_is_server': True}
+        'OPTIONS': {'driver': 'ODBC Driver 17 for SQL Server', 'host_is_server': True},
+    },
+    'barcodes': {
+        'ENGINE': 'mssql',
+        'NAME': 'barcodes',
+        'USER': 'python',
+        'PASSWORD': 'Daicel@DSSE',
+        'HOST': '159.228.208.8',
+        'PORT': '1433',
+        'OPTIONS': {'driver': 'ODBC Driver 17 for SQL Server', 'host_is_server': True},
     }
 }
 

@@ -6,6 +6,7 @@
 #   * Remove `managed = False` lines if you wish to allow Django to create, modify, and delete the table
 # Feel free to rename the models, but don't rename db_table values or field names.
 from django.db import models
+import uuid
 
 
 class BpcsEch(models.Model):
@@ -1108,7 +1109,7 @@ class Tunits(models.Model):
     description = models.CharField(max_length=50)
 
     class Meta:
-        managed = True
+        managed = False
         db_table = 'tUnits'
 
 
@@ -1191,7 +1192,7 @@ class Warehousevolume(models.Model):
     lastactivity = models.DateTimeField(db_column='lastActivity')  # Field name made lowercase.
 
     class Meta:
-        managed = False
+        managed = True
         db_table = 'warehouseVolume'
 
 
@@ -1203,5 +1204,125 @@ class Warehouses(models.Model):
     bpcscode = models.CharField(db_column='bpcsCode', max_length=50, blank=True, null=True)  # Field name made lowercase.
 
     class Meta:
-        managed = True
+        managed = False
         db_table = 'warehouses'
+
+
+class Rawpacking(models.Model):
+    id = models.BigAutoField(primary_key=True)
+  #  timestamp = models.DateTimeField(editable=False)
+    serial = models.CharField(max_length=16, blank=True, null=True)
+    productiontype = models.CharField(db_column='productionType', max_length=4, blank=True, null=True)  # Field name made lowercase.
+    productionlot = models.CharField(db_column='productionLot', max_length=10, blank=True, null=True)  # Field name made lowercase.
+    idline = models.BigIntegerField(db_column='idLine', blank=True, null=True)  # Field name made lowercase.
+    idmachine = models.BigIntegerField(db_column='idMachine', blank=True, null=True)  # Field name made lowercase.
+
+    class Meta:
+        managed = False
+        db_table = 'RawPacking'
+
+    def save(self, *args, **kwargs):
+        print('$$$$$$$$$$$$$', self.id)
+        print(self.serial)
+        super(Rawpacking, self).save(*args, **kwargs)
+
+
+class Settings(models.Model):
+    id = models.CharField(db_column='id', primary_key=True, max_length=36)
+    devicename = models.TextField(db_column='deviceName', blank=True, null=True)  # Field name made lowercase.
+    idmachine = models.BigIntegerField(db_column='idMachine', blank=True, null=True)  # Field name made lowercase.
+    autopacking = models.BooleanField(db_column='autoPacking', blank=True, null=True)  # Field name made lowercase.
+    productiontype = models.CharField(db_column='productionType', max_length=4, blank=True, null=True)  # Field name made lowercase.
+
+    class Meta:
+        managed = False
+        db_table = 'Settings'
+
+
+class Production(models.Model):
+    id = models.BigAutoField(db_column='id', primary_key=True)
+    serial = models.CharField(max_length=50)
+    lot = models.CharField(max_length=50, blank=True, null=True)
+    idline = models.BigIntegerField(db_column='idLine', blank=True, null=True)  # Field name made lowercase.
+    idmachines = models.BigIntegerField(db_column='idMachines', blank=True, null=True)  # Field name made lowercase.
+    linecode = models.CharField(db_column='lineCode', max_length=10, blank=True, null=True)  # Field name made lowercase.
+    productcode = models.CharField(db_column='productCode', max_length=10, blank=True, null=True)  # Field name made lowercase.
+    weight = models.DecimalField(max_digits=14, decimal_places=4, blank=True, null=True)
+    proddate = models.DateField(db_column='prodDate', blank=True, null=True)  # Field name made lowercase.
+    prodtime = models.TimeField(db_column='prodTime', blank=True, null=True)  # Field name made lowercase.
+    status = models.SmallIntegerField()
+
+    class Meta:
+        managed = False
+        db_table = 'production'
+
+
+class Productiondev(models.Model):
+    id = models.BigAutoField(db_column='id', primary_key=True)
+    serial = models.CharField(max_length=50)
+    lot = models.CharField(max_length=50, blank=True, null=True)
+    idline = models.BigIntegerField(db_column='idLine', blank=True, null=True)  # Field name made lowercase.
+    idmachines = models.BigIntegerField(db_column='idMachines', blank=True, null=True)  # Field name made lowercase.
+    linecode = models.CharField(db_column='lineCode', max_length=10, blank=True, null=True)  # Field name made lowercase.
+    productcode = models.CharField(db_column='productCode', max_length=10, blank=True, null=True)  # Field name made lowercase.
+    weight = models.DecimalField(max_digits=14, decimal_places=4, blank=True, null=True)
+    proddate = models.DateField(db_column='prodDate', blank=True, null=True)  # Field name made lowercase.
+    prodtime = models.TimeField(db_column='prodTime', blank=True, null=True)  # Field name made lowercase.
+    status = models.SmallIntegerField()
+
+    class Meta:
+        managed = False
+        db_table = 'productionDev'
+
+
+class Tmachineauto(models.Model):
+    idmachine = models.IntegerField(db_column='idMachine', primary_key=True)  # Field name made lowercase.
+    namemachine = models.CharField(db_column='nameMachine', max_length=50, blank=True, null=True)  # Field name made lowercase.
+    used = models.BooleanField()
+    usedby = models.CharField(db_column='usedBy', max_length=50, blank=True, null=True)  # Field name made lowercase.
+    changedate = models.DateTimeField(db_column='ChangeDate', blank=True, null=True)  # Field name made lowercase.
+
+    class Meta:
+        managed = False
+        db_table = 'tMachineAuto'
+
+
+class Tproductiontmp(models.Model):
+    id = models.BigAutoField(db_column='id', primary_key=True)
+    serial = models.CharField(max_length=50)
+    lot = models.CharField(max_length=50, blank=True, null=True)
+    idline = models.BigIntegerField(db_column='idLine', blank=True, null=True)  # Field name made lowercase.
+    idmachines = models.BigIntegerField(db_column='idMachines', blank=True, null=True)  # Field name made lowercase.
+    linecode = models.CharField(db_column='lineCode', max_length=10, blank=True, null=True)  # Field name made lowercase.
+    productcode = models.CharField(db_column='productCode', max_length=10, blank=True, null=True)  # Field name made lowercase.
+    weight = models.DecimalField(max_digits=14, decimal_places=4, blank=True, null=True)
+    proddate = models.DateField(db_column='prodDate', blank=True, null=True)  # Field name made lowercase.
+    prodtime = models.TimeField(db_column='prodTime', blank=True, null=True)  # Field name made lowercase.
+    status = models.SmallIntegerField()
+
+    class Meta:
+        managed = False
+        db_table = 'tProductionTmp'
+
+
+class Tverification(models.Model):
+    id = models.AutoField(db_column='id', primary_key=True)
+    serial = models.CharField(max_length=50)
+    idmachine = models.IntegerField(db_column='idMachine')  # Field name made lowercase.
+    reportdate = models.DateTimeField(db_column='reportDate', blank=True, null=True)  # Field name made lowercase.
+
+    class Meta:
+        managed = False
+        db_table = 'tVerification'
+
+
+class Tvisionpictureconfigs(models.Model):
+    id = models.AutoField(db_column='id', primary_key=True)
+    idmachine = models.IntegerField(db_column='idMachine')  # Field name made lowercase.
+    mintimestamp = models.DateTimeField(db_column='minTimestamp', blank=True, null=True)  # Field name made lowercase.
+    maxtimestamp = models.DateTimeField(db_column='maxTimestamp', blank=True, null=True)  # Field name made lowercase.
+
+    class Meta:
+        managed = False
+        db_table = 'tVisionPictureConfigs'
+
