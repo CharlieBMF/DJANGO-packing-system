@@ -1,30 +1,29 @@
-from django.shortcuts import render
-from django.http import HttpResponse
+from django.shortcuts import render, redirect
+from django.http import HttpResponse, request
 from .models import Tweight, Rawpacking
 from django.views.generic import CreateView, ListView
-from django.urls import reverse_lazy
+from django.urls import reverse_lazy, reverse
+from .forms import RawpackingForm
+from .serializers import RawpackingSerializer
+from rest_framework.response import Response
+from rest_framework.decorators import api_view
+from .models import Rawpacking
 
 
-# Create your views here.
-
-def index(request):
-    customers = Tweight.objects.all()[:5]
-    output = '<br>'.join([c.barcode for c in customers])
-    return HttpResponse(output)
+@api_view(['GET'])
+def index(request, *args, **kwargs):
+    instance = Rawpacking.objects.all().first()
+    #print(instance[1].timestamp)
+    #print(instance[1].id)
+    data = {}
+    if instance:
+        data = RawpackingSerializer(instance).data
+    print(data)
+    return Response(data)
 
 
 def example(request):
     return render(request, 'main/example.html')
-
-
-class TweightCreateView(CreateView):
-    model = Tweight
-    fields = "__all__"
-    success_url = reverse_lazy('main:list_tweight')
-
-
-class TweightListView(ListView):
-    model = Tweight
 
 
 class RawpackingListView(ListView):
@@ -33,16 +32,21 @@ class RawpackingListView(ListView):
 
 class RawpackingCreateView(CreateView):
     model = Rawpacking
-    fields = '__all__'
-    success_url = reverse_lazy('rawpacking_list')
+    fields = ['serial', 'productionlot', 'productiontype', 'idline', 'idmachine']
+    success_url = reverse_lazy('main:rawpacking_list')
 
     def form_valid(self, form):
-        # Print or log the data before saving
-        print(form)
         print("Data to be saved:", form.cleaned_data)
-
-
-        # Call the parent class method to save the form
         return super().form_valid(form)
 
 
+def Rawpacking_create_manual(request):
+    if request.method == 'POST':
+        form = RawpackingForm(request.POST)
+
+        if form.is_valid():
+            form.save()
+            return redirect(reverse('main:rawpacking_list'))
+    else:
+        form = RawpackingForm()
+    return render(request, 'main/rawpacking_manual_form.html', context={'form': form})

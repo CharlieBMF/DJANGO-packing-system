@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<table border=1 frame=void rules=rows style=" border: 1px solid black; border-collapse: separate; border-spacing: 10px;">
+  {% for rawpacking in object_list %}
+    <tr style=" border: 1px solid black; border-spacing: 10px">
+        <th style=" border: 1px solid black;"> {{rawpacking.timestamp}}</th>
+        <th> {{rawpacking.serial}}</th>
+        <th> {{rawpacking.productiontype}}</th>
+        <th> {{rawpacking.productionlot}}</th>
+        <th> {{rawpacking.idline}}</th>
+        <th> {{rawpacking.idmachine}}</th>
+    </tr>
+  {% endfor %}
+</table>
+</body>
+</html>

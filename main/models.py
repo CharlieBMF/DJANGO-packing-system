@@ -9,6 +9,13 @@ from django.db import models
 import uuid
 
 
+def prevent_updating_non_editable_fields(clazz):
+    """ prevents sending non`editable` fields in queries  """
+    meta = clazz._meta
+    meta.local_concrete_fields = [f for f in meta.local_concrete_fields if f.editable]
+    return clazz
+
+
 class BpcsEch(models.Model):
     hord = models.CharField(db_column='HORD', max_length=50, blank=True, null=True)  # Field name made lowercase.
     hedte = models.DateField(db_column='HEDTE', blank=True, null=True)  # Field name made lowercase.
@@ -1207,10 +1214,10 @@ class Warehouses(models.Model):
         managed = False
         db_table = 'warehouses'
 
-
+@prevent_updating_non_editable_fields
 class Rawpacking(models.Model):
-    id = models.BigAutoField(primary_key=True)
-  #  timestamp = models.DateTimeField(editable=False)
+    id = models.CharField(db_column='id', primary_key=True, default=uuid.uuid4(), max_length=36)
+    timestamp = models.DateTimeField(editable=False, blank=True, default=None)
     serial = models.CharField(max_length=16, blank=True, null=True)
     productiontype = models.CharField(db_column='productionType', max_length=4, blank=True, null=True)  # Field name made lowercase.
     productionlot = models.CharField(db_column='productionLot', max_length=10, blank=True, null=True)  # Field name made lowercase.
@@ -1218,13 +1225,8 @@ class Rawpacking(models.Model):
     idmachine = models.BigIntegerField(db_column='idMachine', blank=True, null=True)  # Field name made lowercase.
 
     class Meta:
-        managed = False
+        managed = True
         db_table = 'RawPacking'
-
-    def save(self, *args, **kwargs):
-        print('$$$$$$$$$$$$$', self.id)
-        print(self.serial)
-        super(Rawpacking, self).save(*args, **kwargs)
 
 
 class Settings(models.Model):

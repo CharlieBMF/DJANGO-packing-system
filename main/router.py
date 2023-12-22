@@ -21,19 +21,15 @@ class DBRouter:
 
     def db_for_read(self, model, **hints):
         if model._meta.model_name in barcodes_models:
-            print('READ bc')
             return 'barcodes'
         elif model._meta.model_name in dcp_models:
-            print('READ dcp')
             return 'dcp'
         return 'default'
 
     def db_for_write(self, model, **hints):
         if model._meta.model_name in barcodes_models:
-            print('WRITE_BC')
             return 'barcodes'
         elif model._meta.model_name in dcp_models:
-            print('WRITE_DCP')
             return 'dcp'
         return 'default'
 
@@ -50,10 +46,8 @@ class DBRouter:
 
     def allow_migrate(self, db, app_label, model_name=None, **hints):
         if model_name in barcodes_models:
-            print('MIGRATE bc')
             return db == 'barcodes'
         if model_name in dcp_models:
-            print('MIGRATE dcp')
             return db == 'dcp'
         return None
 
